@@ -11,7 +11,7 @@ BATCH_SIZE = 32
 AUTOTUNE = tf.data.AUTOTUNE
 EPOCHS = 15
 
-# 1) Load dataset
+# 1) for Loading the dataset
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     os.path.join(DATA_DIR, "train"),
     labels="inferred",
@@ -35,7 +35,7 @@ class_names = train_ds.class_names
 num_classes = len(class_names)
 print("Classes:", class_names)
 
-# Prefetch
+# Prefetch(to increase the latency and speed of program)
 train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
