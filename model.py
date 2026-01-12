@@ -1,10 +1,10 @@
-# Save as train_image_recognition.py and run (or run in Colab)
+# run in google Colab)
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 import os
 
-# Settings
+#block of code for Settings
 DATA_DIR = "/path/to/dataset"   # change: path to your dataset root
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
@@ -12,6 +12,7 @@ AUTOTUNE = tf.data.AUTOTUNE
 EPOCHS = 15
 
 # 1) for Loading the dataset
+# taking the open dataset from kaggle of different cars like BMW,MERCEDIES,etc 
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     os.path.join(DATA_DIR, "train"),
     labels="inferred",
@@ -31,11 +32,13 @@ val_ds = tf.keras.preprocessing.image_dataset_from_directory(
     shuffle=False
 )
 
+#defing the class name 
 class_names = train_ds.class_names
 num_classes = len(class_names)
 print("Classes:", class_names)
 
 # Prefetch(to increase the latency and speed of program)
+#It help to improve the imficency of the code
 train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
@@ -47,7 +50,8 @@ data_augmentation = keras.Sequential([
     # add more if you want
 ], name="data_augmentation")
 
-# 3) Build model with transfer learning (MobileNetV2)
+# 3) Building the model with transfer learning (MobileNetV2)
+
 preprocess_input = tf.keras.applications.mobilenet_v2.preprocess_input
 
 base_model = tf.keras.applications.MobileNetV2(
@@ -77,10 +81,12 @@ model.compile(
 model.summary()
 
 # 4) Callbacks
+#calling as the name defined in it 
 checkpoint_cb = keras.callbacks.ModelCheckpoint("best_model.h5", save_best_only=True, monitor="val_accuracy")
 earlystop_cb = keras.callbacks.EarlyStopping(monitor="val_accuracy", patience=5, restore_best_weights=True)
 
-# 5) Train (initial)
+# 5) Training the model (initial)
+#intial traning of the model(least optimise)
 history = model.fit(
     train_ds,
     validation_data=val_ds,
@@ -88,7 +94,7 @@ history = model.fit(
     callbacks=[checkpoint_cb, earlystop_cb]
 )
 
-# 6) Optional: Fine-tune some layers
+# 6) better optimision
 base_model.trainable = True
 # Freeze first N layers or set a cutoff
 fine_tune_at = 100
@@ -112,7 +118,7 @@ history_fine = model.fit(
     callbacks=[checkpoint_cb, earlystop_cb]
 )
 
-# 7) Evaluate on test set (if available)
+# 7) Evaluate on test set
 if os.path.isdir(os.path.join(DATA_DIR, "test")):
     test_ds = tf.keras.preprocessing.image_dataset_from_directory(
         os.path.join(DATA_DIR, "test"),
@@ -126,10 +132,11 @@ if os.path.isdir(os.path.join(DATA_DIR, "test")):
     loss, acc = model.evaluate(test_ds)
     print("Test accuracy:", acc)
 
-# 8) Save final model
+# 8) Saveing the final model
 model.save("image_recognition_model")
 
 # 9) Example predict on a single image
+# can process only single image at a time 
 import numpy as np
 from tensorflow.keras.preprocessing import image
 
