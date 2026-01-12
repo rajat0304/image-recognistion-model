@@ -66,6 +66,7 @@ x = layers.Dropout(0.3)(x)
 outputs = layers.Dense(num_classes, activation="softmax")(x)
 
 model = keras.Model(inputs, outputs)
+#importing keras here to perform the task
 
 model.compile(
     optimizer=keras.optimizers.Adam(learning_rate=1e-3),
